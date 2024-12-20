@@ -1,5 +1,4 @@
 import os
-import json
 
 from flask import Flask, request, abort
 
@@ -44,8 +43,8 @@ def handle_message(event):
     if 'info' in msg:
         # displayName = msg.
         # message = TextSendMessage(text = f'uid={name}, gid={groupId}, userId={userId}, name={name}, displayName={displayName}')
-        jsonstr = json.dumps(event.__dict__)
-        message = TextSendMessage(text = f'info={jsonstr}')
+        eventStr = str(event)
+        message = TextSendMessage(text = f'info={eventStr}')
         line_bot_api.reply_message(event.reply_token, message)
     elif '+1' in msg:
         message = TextSendMessage(text = 'OK')
