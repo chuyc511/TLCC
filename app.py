@@ -1,4 +1,5 @@
 import os
+import json
 
 from flask import Flask, request, abort
 
@@ -34,13 +35,17 @@ def callback():
 @handler.add(MessageEvent, message = TextMessage)
 def handle_message(event):
     msg = event.message.text
-    groupId = event.source.groupId
-    userId = event.source.userId
-    profile = line_bot_api.get_group_member_profile(groupId, userId)
-    name = profile.display_name
+    # groupId = event.source.groupId
+    # userId = event.source.userId
+    # profile = line_bot_api.get_group_member_profile(groupId, userId)
+    # name = profile.display_name
+
 
     if 'info' in msg:
-        message = TextSendMessage(text = f'uid={name}, gid={groupId}, userId={userId}, name={name}')
+        # displayName = msg.
+        # message = TextSendMessage(text = f'uid={name}, gid={groupId}, userId={userId}, name={name}, displayName={displayName}')
+        jsonstr = json.dumps(event.__dict__)
+        message = TextSendMessage(text = f'info={jsonstr}')
         line_bot_api.reply_message(event.reply_token, message)
     elif '+1' in msg:
         message = TextSendMessage(text = 'OK')
