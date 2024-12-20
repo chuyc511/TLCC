@@ -34,14 +34,13 @@ def callback():
 @handler.add(MessageEvent, message = TextMessage)
 def handle_message(event):
     msg = event.message.text
-    uid = event.joined.members[0].user_id
-    gid = event.source.group_id
-    profile = line_bot_api.get_group_member_profile(gid, uid)
-    userId = profile.display_name
+    groupId = event.source.groupId
+    userId = event.source.userId
+    profile = line_bot_api.get_group_member_profile(groupId, userId)
     name = profile.display_name
 
     if 'info' in msg:
-        message = TextSendMessage(text = f'uid={name}, gid={gid}, userId={userId}, name={name}')
+        message = TextSendMessage(text = f'uid={name}, gid={groupId}, userId={userId}, name={name}')
         line_bot_api.reply_message(event.reply_token, message)
     elif '+1' in msg:
         message = TextSendMessage(text = 'OK')
