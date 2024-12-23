@@ -12,9 +12,15 @@ from linebot.models import *
 
 app = Flask(__name__)
 
+groupId = 'Cd58649e677c5804baffef57b2e345c2b'
+
 userArr = [
-    User('U5214b9445dd5fff0c1d821b01fc2e855', 'Rio', 'Lemon'),
-    User('U41370a3e3c73137f6f272e20c1e6b8cc', '小桃', '絕代小桃')
+    User('U5214b9445dd5fff0c1d821b01fc2e855', 'Rio', '青檸雨上'),
+    User('U41370a3e3c73137f6f272e20c1e6b8cc', '阿仙', '絕代小桃'),
+    User('U9d221779ff70200dee66bff33031ef2a', '。', '今生緣'),
+    User('Uc5591b183ab8278605f37a91c7d3bc1b', '穎璁', '擎宵'),
+    User('U86a102f472f6b2725a9c20dc7325f236', '依依老師💜', '尹絮'),
+    User('Ud6b102dc9ae832fda916e02678e134f2', 'wind', '凪')
 ]
 
 # Channel Access Token
@@ -45,6 +51,10 @@ def handle_message(event):
     profile = lineBotApi.get_profile(userId)
     lineName = profile.display_name
 
+    member_ids_res = lineBotApi.get_group_member_ids(groupId)
+
+    print(f'member_ids_res={str(member_ids_res)}')
+
     if msg.startswith('/RegisterTianLong'):
         tianLongNameArr = msg.split('-', 1)
         tianLongName = lineName
@@ -72,10 +82,13 @@ def handle_message(event):
         message = TextSendMessage(text = tmpResult)
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/+1'):
-        message = TextSendMessage(text = 'OK')
+        message = TextSendMessage(text = '+1 OK')
+        lineBotApi.reply_message(event.reply_token, message)
+    elif msg.startswith('/-1'):
+        message = TextSendMessage(text = '-1 OK')
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/+2'):
-        message = TextSendMessage(text = 'OK')
+        message = TextSendMessage(text = '+2 OK')
         lineBotApi.reply_message(event.reply_token, message)
     else:
         print('handle_message continue...')
