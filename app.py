@@ -43,15 +43,10 @@ def callback():
 @handler.add(MessageEvent, message = TextMessage)
 def handle_message(event):
     print(f'event: {str(event)}')
+    print(f'type(event): {type(event)}')
     msg = event.message.text
-    print(f'msg: {str(msg)}')
-
-    print(f'event.source: {event["source"]}')
-
-    print(f'event.source.userId: {event["source"]["userId"]}')
-
-    userId = event["source"]['userId']
-    print(f'userId: {str(userId)}')
+    # userId = event.source.userId
+    userId = 'U5214b9445dd5fff0c1d821b01fc2e855'
     profile = lineBotApi.get_profile(userId)
     lineName = profile.displayName
 
