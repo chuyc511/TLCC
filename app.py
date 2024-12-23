@@ -47,20 +47,21 @@ def handle_message(event):
 
     if msg.startswith('/RegisterTianLong'):
         tianLongNameArr = msg.split('-', 1)
-        tianLongName = ''
+        tianLongName = lineName
 
         if len(tianLongNameArr) == 2:
             tianLongName = tianLongNameArr[1]
-            if any(user.userId == userId for user in userArr):
-                for item in userArr:
-                    if item.userId == userId:
-                        item.lineName = lineName
-                        item.tianLongName = tianLongName
-                        break
-            else:
-                userArr.append(User(userId, lineName, tianLongName))
+
+        if any(user.userId == userId for user in userArr):
+            for item in userArr:
+                if item.userId == userId:
+                    item.lineName = lineName
+                    item.tianLongName = tianLongName
+                    break
+        else:
+            userArr.append(User(userId, lineName, tianLongName))
                 
-        message = TextSendMessage(text = f'Line={lineName}\nTianLong={tianLongName}')
+        message = TextSendMessage(text = f'Line:{lineName}\nTianLong:{tianLongName}')
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/GetCurrentUserInfo') and userId == 'U5214b9445dd5fff0c1d821b01fc2e855':
         tmpResult = ''
@@ -77,8 +78,9 @@ def handle_message(event):
         message = TextSendMessage(text = 'OK')
         lineBotApi.reply_message(event.reply_token, message)
     else:
-        message = TextSendMessage(text = msg)
-        lineBotApi.reply_message(event.reply_token, message)
+        print('handle_message continue...')
+        # message = TextSendMessage(text = msg)
+        # lineBotApi.reply_message(event.reply_token, message)
 
 @handler.add(PostbackEvent)
 def handle_message(event):
