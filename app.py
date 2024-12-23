@@ -42,14 +42,10 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message = TextMessage)
 def handle_message(event):
-    print(f'event: {str(event)}')
-    print(f'type(event): {type(event)}')
     msg = event.message.text
-    userId = event.source.userId
+    userId = event.source.user_id
     profile = lineBotApi.get_profile(userId)
-    print(f'profile: {str(profile)}')
-    print(f'type(profile): {type(profile)}')
-    lineName = profile.displayName
+    lineName = profile.display_name
 
     if msg.startswith('/RegisterTianLong'):
         tianLongNameArr = msg.split('-', 1)
