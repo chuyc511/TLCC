@@ -44,10 +44,16 @@ def callback():
 def handle_message(event):
     print(f'event: {str(event)}')
     print(f'type(event): {type(event)}')
-    msg = event.message.text
-    # userId = event.source.userId
-    userId = 'U5214b9445dd5fff0c1d821b01fc2e855'
+    print(f'event[0]: {str(event[0])}')
+    print(f'type(event[0]): {type(event[0])}')
+    print(f'event[0].message.text): {event[0].message.text}')
+    print(f'event[0].message.userId): {event[0].source.userId}')
+    msg = event[0].message.text
+    userId = event[0].source.userId
+    # userId = 'U5214b9445dd5fff0c1d821b01fc2e855'
     profile = lineBotApi.get_profile(userId)
+    print(f'profile: {str(profile)}')
+    print(f'type(profile): {type(profile)}')
     lineName = profile.displayName
 
     if msg.startswith('/RegisterTianLong'):
