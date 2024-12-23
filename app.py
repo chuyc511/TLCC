@@ -87,6 +87,8 @@ def handle_message(event):
         message = TextSendMessage(text = '+2 OK')
         lineBotApi.reply_message(event.reply_token, message)
     else:
+        print(f'userId:{userId}')
+        print(f'lineName:{lineName}')
         print('handle_message continue...')
         # message = TextSendMessage(text = msg)
         # lineBotApi.reply_message(event.reply_token, message)
