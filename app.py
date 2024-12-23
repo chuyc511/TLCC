@@ -51,10 +51,6 @@ def handle_message(event):
     profile = lineBotApi.get_profile(userId)
     lineName = profile.display_name
 
-    member_ids_res = lineBotApi.get_group_member_ids(groupId)
-
-    print(f'member_ids_res={str(member_ids_res)}')
-
     if msg.startswith('/RegisterTianLong'):
         tianLongNameArr = msg.split('-', 1)
         tianLongName = lineName
