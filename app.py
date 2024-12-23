@@ -46,11 +46,11 @@ def handle_message(event):
     msg = event.message.text
     print(f'msg: {str(msg)}')
 
-    print(f'event.source: {str(event['source'])}')
+    print(f'event.source: {event["source"]}')
 
-    print(f'event.source.userId: {str(event['source']['userId'])}')
+    print(f'event.source.userId: {event["source"]["userId"]}')
 
-    userId = event['source']['userId']
+    userId = event["source"]['userId']
     print(f'userId: {str(userId)}')
     profile = lineBotApi.get_profile(userId)
     lineName = profile.displayName
