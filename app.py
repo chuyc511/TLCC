@@ -1,7 +1,5 @@
 import os
 
-import json
-
 from user import User
 
 from flask import Flask, request, abort
@@ -62,13 +60,13 @@ def handle_message(event):
             else:
                 userArr.append(User(userId, lineName, tianLongName))
                 
-        message = TextSendMessage(text = f'Line={lineName}, TianLong={tianLongName}')
+        message = TextSendMessage(text = f'Line={lineName}\nTianLong={tianLongName}')
         lineBotApi.reply_message(event.reply_token, message)
-    elif msg.startswith('/GetCurrentUserInfo'):
+    elif msg.startswith('/GetCurrentUserInfo') and userId == 'U5214b9445dd5fff0c1d821b01fc2e855':
         tmpResult = ''
+
         for item in userArr:
-            tmpResult += f"User('{item.userId}', '{item.lineName}', '{item.lineName}'),`\n`"
-            print(f"User('{item.userId}', '{item.lineName}', '{item.lineName}'),")
+            tmpResult += f"User('{item.userId}', '{item.lineName}', '{item.tianLongName}'),\n"
         
         message = TextSendMessage(text = tmpResult)
         lineBotApi.reply_message(event.reply_token, message)
