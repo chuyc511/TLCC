@@ -15,8 +15,8 @@ from linebot.models import *
 app = Flask(__name__)
 
 userArr = [
-    User("U5214b9445dd5fff0c1d821b01fc2e855", "Rio", "Lemon"),
-    User("U41370a3e3c73137f6f272e20c1e6b8cc", "小桃", "絕代小桃")
+    User('U5214b9445dd5fff0c1d821b01fc2e855', 'Rio', 'Lemon'),
+    User('U41370a3e3c73137f6f272e20c1e6b8cc', '小桃', '絕代小桃')
 ]
 
 # Channel Access Token
@@ -65,10 +65,12 @@ def handle_message(event):
         message = TextSendMessage(text = f'Line={lineName}, TianLong={tianLongName}')
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/GetCurrentUserInfo'):
+        tmpResult = ''
         for item in userArr:
-            print(f'userId={item.userId}, displayName={item.lineName}, alias={item.tianLongName}')
+            tmpResult += f"User('{item.userId}', '{item.lineName}', '{item.lineName}'),`\n`"
+            print(f"User('{item.userId}', '{item.lineName}', '{item.lineName}'),")
         
-        message = TextSendMessage(text = f'GetCurrentUserInfo')
+        message = TextSendMessage(text = tmpResult)
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/+1'):
         message = TextSendMessage(text = 'OK')
