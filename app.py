@@ -1,5 +1,9 @@
 import os
 
+import json
+
+from user import User
+
 from flask import Flask, request, abort
 
 from linebot import (LineBotApi, WebhookHandler)
@@ -10,8 +14,12 @@ from linebot.models import *
 
 app = Flask(__name__)
 
+userArr = [
+    User("U5214b9445dd5fff0c1d821b01fc2e855", "Rio", "Lemon")
+]
+
 # Channel Access Token
-line_bot_api = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN', ''))
+lineBotApi = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN', ''))
 # Channel Secret
 handler = WebhookHandler(os.environ.get('CHANNEL_SECRET', ''))
 
@@ -34,27 +42,42 @@ def callback():
 @handler.add(MessageEvent, message = TextMessage)
 def handle_message(event):
     msg = event.message.text
-    # groupId = event.source.groupId
-    # userId = event.source.userId
-    # profile = line_bot_api.get_group_member_profile(groupId, userId)
-    # name = profile.display_name
+    userId = event.source.userId
+    profile = lineBotApi.get_profile(userId)
+    lineName = profile.displayName
 
+    if msg.startswith('/RegisterTianLong'):
+        tianLongNameArr = msg.split('-', 1)
+        tianLongName = ''
 
-    if 'info' in msg:
-        # displayName = msg.
-        # message = TextSendMessage(text = f'uid={name}, gid={groupId}, userId={userId}, name={name}, displayName={displayName}')
-        eventStr = str(event)
-        message = TextSendMessage(text = f'info={eventStr}')
-        line_bot_api.reply_message(event.reply_token, message)
-    elif '+1' in msg:
+        if len(tianLongNameArr) == 2:
+            tianLongName = tianLongNameArr[1]
+            if any(user.userId == userId for user in userArr):
+                for item in userArr:
+                    if item.userId == userId:
+                        item.lineName = lineName
+                        item.tianLongName = tianLongName
+                        break
+            else:
+                userArr.append(User(userId, lineName, tianLongName))
+                
+        message = TextSendMessage(text = f'Line={lineName}, TianLong={tianLongName}')
+        lineBotApi.reply_message(event.reply_token, message)
+    elif msg.startswith('/GetCurrentUserInfo'):
+        for item in userArr:
+            print(f'userId={item.userId}, displayName={item.lineName}, alias={item.tianLongName}')
+        
+        message = TextSendMessage(text = f'GetCurrentUserInfo')
+        lineBotApi.reply_message(event.reply_token, message)
+    elif msg.startswith('/+1'):
         message = TextSendMessage(text = 'OK')
-        line_bot_api.reply_message(event.reply_token, message)
-    elif '+2' in msg:
+        lineBotApi.reply_message(event.reply_token, message)
+    elif msg.startswith('/+2'):
         message = TextSendMessage(text = 'OK')
-        line_bot_api.reply_message(event.reply_token, message)
+        lineBotApi.reply_message(event.reply_token, message)
     else:
-        # message = TextSendMessage(text = msg)
-        # line_bot_api.reply_message(event.reply_token, message)
+        message = TextSendMessage(text = msg)
+        lineBotApi.reply_message(event.reply_token, message)
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -64,10 +87,10 @@ def handle_message(event):
 def welcome(event):
     uid = event.joined.members[0].user_id
     gid = event.source.group_id
-    profile = line_bot_api.get_group_member_profile(gid, uid)
+    profile = lineBotApi.get_group_member_profile(gid, uid)
     name = profile.display_name
     message = TextSendMessage(text = f'{name}歡迎加入')
-    line_bot_api.reply_message(event.reply_token, message)
+    lineBotApi.reply_message(event.reply_token, message)
             
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
