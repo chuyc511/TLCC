@@ -15,7 +15,8 @@ from linebot.models import *
 app = Flask(__name__)
 
 userArr = [
-    User("U5214b9445dd5fff0c1d821b01fc2e855", "Rio", "Lemon")
+    User("U5214b9445dd5fff0c1d821b01fc2e855", "Rio", "Lemon"),
+    User("U41370a3e3c73137f6f272e20c1e6b8cc", "小桃", "絕代小桃")
 ]
 
 # Channel Access Token
@@ -41,8 +42,11 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message = TextMessage)
 def handle_message(event):
+    print(f'event: {str(event)}')
     msg = event.message.text
+    print(f'msg: {str(msg)}')
     userId = event.source.userId
+    print(f'userId: {str(userId)}')
     profile = lineBotApi.get_profile(userId)
     lineName = profile.displayName
 
