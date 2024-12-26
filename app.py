@@ -83,7 +83,14 @@ def handle_message(event):
                 ]
             )
         else:
-            create_team(today_str, qiang_user_id)
+            weekday = datetime.today().isoweekday()
+
+            defult_user_id = None
+
+            if weekday <= 5:
+                defult_user_id = qiang_user_id
+
+            create_team(today_str, defult_user_id)
 
             team = query_team(today_str)
 
@@ -200,21 +207,27 @@ def handle_message(event):
                 
                 if team.member_a == user_id:
                     team.member_a = None
+                    team.member_a_name = None
                     update_team_member_a(today_str, None)
                 elif team.member_b == user_id:
-                    team.member_b = user_id
+                    team.member_b = None
+                    team.member_b_name = None
                     update_team_member_b(today_str, None)
                 elif team.member_c == user_id:
-                    team.member_c = user_id
+                    team.member_c = None
+                    team.member_c_name = None
                     update_team_member_c(today_str, None)
                 elif team.member_d == user_id:
-                    team.member_d = user_id
+                    team.member_d = None
+                    team.member_d_name = None
                     update_team_member_d(today_str, None)
                 elif team.member_e == user_id:
-                    team.member_e = user_id
+                    team.member_e = None
+                    team.member_e_name = None
                     update_team_member_e(today_str, None)
                 elif team.member_f == user_id:
-                    team.member_f = user_id
+                    team.member_f = None
+                    team.member_f_name = None
                     update_team_member_f(today_str, None)
                 else:
                     isSuccess = False
