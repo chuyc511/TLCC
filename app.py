@@ -26,7 +26,7 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET', ''))
 
 group_id = os.getenv('GROUP_ID', '')
 
-owner_user_id = os.getenv('ADMIN_USER_ID', '')
+owner_user_id = os.getenv('OWNER_USER_ID', '')
 qiang_user_id = os.getenv('QIANG_USER_ID', '')
 
 # 監聽所有來自 /callback 的 Post Request
