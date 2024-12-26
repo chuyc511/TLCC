@@ -325,7 +325,7 @@ def handle_message(event):
                         TextSendMessage(text = '你沒註冊！(｀⌒´メ)')
                     )
         else:
-            print('userId:{user_id}, handle_message continue...')
+            1
 
 @handler.add(PostbackEvent)
 def handle_message(event):
