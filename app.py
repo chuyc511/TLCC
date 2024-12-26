@@ -78,7 +78,7 @@ def handle_message(event):
             lineBotApi.reply_message(
                 event.reply_token, 
                 [
-                    TextSendMessage(text = '已建立組隊！'), 
+                    TextSendMessage(text = '組隊建過了！(｀⌒´メ)'), 
                     TextSendMessage(text = get_team_message(team))
                 ]
             )
@@ -90,7 +90,7 @@ def handle_message(event):
             lineBotApi.reply_message(
                 event.reply_token, 
                 [
-                    TextSendMessage(text = '組隊建立成功！'), 
+                    TextSendMessage(text = '組隊建立成功！(。・`ω´・)'), 
                     TextSendMessage(text = get_team_message(team))
                 ]
             )
@@ -108,7 +108,7 @@ def handle_message(event):
         else:
             lineBotApi.reply_message(
                 event.reply_token,
-                TextSendMessage(text = '組隊尚未成立！')
+                TextSendMessage(text = '還沒建組隊，別急！')
             )
     elif msg.startswith('/+1'):
 
@@ -123,6 +123,13 @@ def handle_message(event):
             if team.date is not None:
 
                 isSuccess = True
+
+                tianlong_name = ''
+
+                for record in user_list:
+                    if record.user_id == user_id:
+                        tianlong_name = record.tianlong_name
+                        break
                 
                 if team.member_a is None:
                     team.member_a = user_id
@@ -170,12 +177,12 @@ def handle_message(event):
             else:
                 lineBotApi.reply_message(
                     event.reply_token, 
-                    TextSendMessage(text = '組隊尚未成立！')
+                    TextSendMessage(text = '還沒建組隊，別急！')
                 )
         else:
             lineBotApi.reply_message(
                 event.reply_token, 
-                TextSendMessage(text = '你沒註冊！')
+                TextSendMessage(text = '你沒註冊！(｀⌒´メ)')
             )
     elif msg.startswith('/-1'):
 
@@ -216,7 +223,7 @@ def handle_message(event):
                     lineBotApi.reply_message(
                         event.reply_token, 
                         [
-                            TextSendMessage(text = '退出成功！'), 
+                            TextSendMessage(text = '退出成功！(｀⌒´メ)'), 
                             TextSendMessage(text = get_team_message(team))
                         ]
                     )
@@ -224,19 +231,19 @@ def handle_message(event):
                     lineBotApi.reply_message(
                         event.reply_token, 
                         [
-                            TextSendMessage(text = '又沒加入！'), 
+                            TextSendMessage(text = '又沒加入！(｀⌒´メ)'), 
                             TextSendMessage(text = get_team_message(team))
                         ]
                     )
             else:
                 lineBotApi.reply_message(
                     event.reply_token, 
-                    TextSendMessage(text = '組隊尚未成立！')
+                    TextSendMessage(text = '還沒建組隊，別急！')
                 )
         else:
             lineBotApi.reply_message(
                 event.reply_token, 
-                TextSendMessage(text = '你沒註冊！')
+                TextSendMessage(text = '你沒註冊！(｀⌒´メ)')
             )
     else:
         print(f'userId:{user_id}')
