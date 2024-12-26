@@ -80,9 +80,36 @@ def update_user(user_id, line_name, tianlong_name):
     })
 
 def query_team(date):
-
-    query_team_script = '''select * from tlcc_team where date = %(date)s;'''
-    
+    query_team_script = '''
+        select 
+            date,
+            member_a,
+            tca.tianlong_name as member_a_name,
+            member_b,
+            tcb.tianlong_name as member_b_name,
+            member_c,
+            tcc.tianlong_name as member_c_name,
+            member_d,
+            tcd.tianlong_name as member_d_name,
+            member_e,
+            tce.tianlong_name as member_e_name,
+            member_f,
+            tcf.tianlong_name as v
+        from tlcc_team as tt
+            left join tlcc_user as tca
+                on tca.user_id = tt.member_a
+            left join tlcc_user as tcb
+                on tcb.user_id = tt.member_b
+            left join tlcc_user as tcc
+                on tcc.user_id = tt.member_c
+            left join tlcc_user as tcd
+                on tcd.user_id = tt.member_d
+            left join tlcc_user as tce
+                on tce.user_id = tt.member_e
+            left join tlcc_user as tcf
+                on tcf.user_id = tt.member_f 
+        where date = %(date)s;
+    '''
     result_list = execute_script(query_team_script, { 'date': date })
 
     if len(result_list) > 0:

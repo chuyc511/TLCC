@@ -1,8 +1,11 @@
 import os
 
+from datetime import datetime
+
 from dotenv import load_dotenv
 
 from dao import *
+from message import *
 
 from flask import Flask, request, abort
 
@@ -23,7 +26,8 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET', ''))
 
 group_id = os.getenv('GROUP_ID', '')
 
-admin_user_id = os.getenv('ADMIN_USER_ID', '')
+owner_user_id = os.getenv('ADMIN_USER_ID', '')
+qiang_user_id = os.getenv('QIANG_USER_ID', '')
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods = ['POST'])
@@ -57,9 +61,6 @@ def handle_message(event):
 
         user_list = query_users()
 
-        for record in user_list:
-            print(vars(record))
-
         if any(record.user_id == user_id for record in user_list):
             update_user(user_id, line_name, tianlong_name)
         else:
@@ -67,14 +68,41 @@ def handle_message(event):
         
         message = TextSendMessage(text = f'Line:{line_name}\nTianLong:{tianlong_name}')
         lineBotApi.reply_message(event.reply_token, message)
+    elif msg.startswith('/NewTeam') and user_id == owner_user_id:
+
+        today_str = datetime.today().strftime('%Y-%m-%d')
+
+        team = query_team(today_str)
+
+        if team.date is not None:
+            lineBotApi.reply_message(
+                event.reply_token, 
+                [
+                    TextSendMessage(text = '已建立組隊！'), 
+                    TextSendMessage(text = get_team_message(team))
+                ]
+            )
+        else:
+            create_team(today_str, qiang_user_id)
+
+            team = query_team(today_str)
+
+            lineBotApi.reply_message(
+                event.reply_token, 
+                [
+                    TextSendMessage(text = '組隊建立成功！'), 
+                    TextSendMessage(text = get_team_message(team))
+                ]
+            )
     elif msg.startswith('/+1'):
+
+
         message = TextSendMessage(text = '+1 OK')
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/-1'):
+
+
         message = TextSendMessage(text = '-1 OK')
-        lineBotApi.reply_message(event.reply_token, message)
-    elif msg.startswith('/+2'):
-        message = TextSendMessage(text = '+2 OK')
         lineBotApi.reply_message(event.reply_token, message)
     else:
         print(f'userId:{user_id}')
