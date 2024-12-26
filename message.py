@@ -36,6 +36,6 @@ def get_team_message(team):
     if team.member_f is not None:
         res_str += f'\n{team.member_f_name}'
 
-    res_str += f'\n\n目前指令有:\n/Team 查看當天組隊\n/+1 加入隊\n/-1 退出'
+    res_str += f'\n\n目前指令有:\n/Team 查看當天組隊\n/+1 加入\n/-1 退出'
 
     return res_str
