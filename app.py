@@ -1,6 +1,8 @@
 import os
 
-from user import User
+from dotenv import load_dotenv
+
+from dao import *
 
 from flask import Flask, request, abort
 
@@ -12,21 +14,18 @@ from linebot.models import *
 
 app = Flask(__name__)
 
-groupId = 'Cd58649e677c5804baffef57b2e345c2b'
-
-userArr = [
-    User('U5214b9445dd5fff0c1d821b01fc2e855', 'Rio', '青檸雨上'),
-    User('U41370a3e3c73137f6f272e20c1e6b8cc', '阿仙', '絕代小桃'),
-    User('U9d221779ff70200dee66bff33031ef2a', '。', '今生緣'),
-    User('Uc5591b183ab8278605f37a91c7d3bc1b', '穎璁', '擎宵'),
-    User('U86a102f472f6b2725a9c20dc7325f236', '依依老師💜', '尹絮'),
-    User('Ud6b102dc9ae832fda916e02678e134f2', 'wind', '凪')
-]
+load_dotenv()
 
 # Channel Access Token
-lineBotApi = LineBotApi(os.environ.get('CHANNEL_ACCESS_TOKEN', ''))
+lineBotApi = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN', ''))
 # Channel Secret
-handler = WebhookHandler(os.environ.get('CHANNEL_SECRET', ''))
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET', ''))
+
+group_id = os.getenv('GROUP_ID', '')
+
+admin_user_id = os.getenv('ADMIN_USER_ID', '')
+
+user_list = query_users()
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods = ['POST'])
@@ -47,35 +46,28 @@ def callback():
 @handler.add(MessageEvent, message = TextMessage)
 def handle_message(event):
     msg = event.message.text
-    userId = event.source.user_id
-    profile = lineBotApi.get_profile(userId)
-    lineName = profile.display_name
+    user_id = event.source.user_id
+    profile = lineBotApi.get_profile(user_id)
+    line_name = profile.display_name
 
     if msg.startswith('/RegisterTianLong'):
-        tianLongNameArr = msg.split('-', 1)
-        tianLongName = lineName
+        tianlong_name_list = msg.split('-', 1)
+        tianlong_name = line_name
 
-        if len(tianLongNameArr) == 2:
-            tianLongName = tianLongNameArr[1]
+        if len(tianlong_name_list) == 2:
+            tianlong_name = tianlong_name_list[1]
 
-        if any(user.userId == userId for user in userArr):
-            for item in userArr:
-                if item.userId == userId:
-                    item.lineName = lineName
-                    item.tianLongName = tianLongName
+        if any(record.user_id == user_id for record in user_list):
+            for record in user_list:
+                if record.user_id == user_id:
+                    update_user(user_id, line_name, tianlong_name)
                     break
         else:
-            userArr.append(User(userId, lineName, tianLongName))
-                
-        message = TextSendMessage(text = f'Line:{lineName}\nTianLong:{tianLongName}')
-        lineBotApi.reply_message(event.reply_token, message)
-    elif msg.startswith('/GetCurrentUserInfo') and userId == 'U5214b9445dd5fff0c1d821b01fc2e855':
-        tmpResult = ''
-
-        for item in userArr:
-            tmpResult += f"User('{item.userId}', '{item.lineName}', '{item.tianLongName}'),\n"
+            create_user(user_id, line_name, tianlong_name)
         
-        message = TextSendMessage(text = tmpResult)
+        user_list = query_users()
+
+        message = TextSendMessage(text = f'Line:{line_name}\nTianLong:{tianlong_name}')
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/+1'):
         message = TextSendMessage(text = '+1 OK')
@@ -87,8 +79,9 @@ def handle_message(event):
         message = TextSendMessage(text = '+2 OK')
         lineBotApi.reply_message(event.reply_token, message)
     else:
-        print(f'userId:{userId}')
-        print(f'lineName:{lineName}')
+        print(f'userId:{user_id}')
+        print(f'lineName:{line_name}')
+        print(f'message:{msg}')
         print('handle_message continue...')
         # message = TextSendMessage(text = msg)
         # lineBotApi.reply_message(event.reply_token, message)
@@ -107,5 +100,5 @@ def welcome(event):
     lineBotApi.reply_message(event.reply_token, message)
             
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.getenv('PORT', 5000))
     app.run(host = '0.0.0.0', port = port)

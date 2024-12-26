@@ -1,9 +1,8 @@
 class User(object):
-    userId = ""
-    lineName = ""
-    tianLongName = ""
+    user_id = None
+    line_name = None
+    tianlong_name = None
 
-    def __init__(self, userId, lineName, tianLongName):
-        self.userId = userId
-        self.lineName = lineName
-        self.tianLongName = tianLongName
+    def __init__(self, dict):
+        for key, value in dict.items():
+            setattr(self, key, value)
