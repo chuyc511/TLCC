@@ -24,7 +24,7 @@ lineBotApi = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN', ''))
 # Channel Secret
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET', ''))
 
-group_id = os.getenv('GROUP_ID', '')
+spec_group_id = os.getenv('GROUP_ID', '')
 
 owner_user_id = os.getenv('OWNER_USER_ID', '')
 qiang_user_id = os.getenv('QIANG_USER_ID', '')
@@ -49,250 +49,283 @@ def callback():
 def handle_message(event):
     msg = event.message.text
     user_id = event.source.user_id
+    group_id = None
     profile = lineBotApi.get_profile(user_id)
     line_name = profile.display_name
 
-    if msg.startswith('/RegisterTianLong'):
-        tianlong_name_list = msg.split('-', 1)
-        tianlong_name = line_name
+    if hasattr(event.source, 'group_id'):
+        group_id = event.source.group_id
 
-        if len(tianlong_name_list) == 2:
-            tianlong_name = tianlong_name_list[1]
+    if group_id == spec_group_id or user_id == owner_user_id:
 
-        user_list = query_users()
+        if msg.startswith('/RegisterTianLong'):
+            tianlong_name_list = msg.split('-', 1)
+            tianlong_name = line_name
 
-        if any(record.user_id == user_id for record in user_list):
-            update_user(user_id, line_name, tianlong_name)
-        else:
-            create_user(user_id, line_name, tianlong_name)
-        
-        message = TextSendMessage(text = f'Line:{line_name}\nTianLong:{tianlong_name}')
-        lineBotApi.reply_message(event.reply_token, message)
-    elif msg.startswith('/NewTeam') and user_id == owner_user_id:
+            if len(tianlong_name_list) == 2:
+                tianlong_name = tianlong_name_list[1]
 
-        today_str = datetime.today().strftime('%Y-%m-%d')
+            user_list = query_users()
 
-        team = query_team(today_str)
-
-        if team.date is not None:
-            lineBotApi.reply_message(
-                event.reply_token, 
-                [
-                    TextSendMessage(text = '組隊建過了！(｀⌒´メ)'), 
-                    TextSendMessage(text = get_team_message(team))
-                ]
-            )
-        else:
-            weekday = datetime.today().isoweekday()
-
-            defult_user_id = None
-
-            if weekday <= 5:
-                defult_user_id = qiang_user_id
-
-            create_team(today_str, defult_user_id)
-
-            team = query_team(today_str)
-
-            lineBotApi.reply_message(
-                event.reply_token, 
-                [
-                    TextSendMessage(text = '組隊建立成功！(。・`ω´・)'), 
-                    TextSendMessage(text = get_team_message(team))
-                ]
-            )
-    elif msg.startswith('/Team'):
-
-        today_str = datetime.today().strftime('%Y-%m-%d')
-
-        team = query_team(today_str)
-
-        if team.date is not None:
-            lineBotApi.reply_message(
-                event.reply_token,
-                TextSendMessage(text = get_team_message(team))
-            )
-        else:
-            lineBotApi.reply_message(
-                event.reply_token,
-                TextSendMessage(text = '還沒建組隊，別急！')
-            )
-    elif msg.startswith('/+1'):
-
-        user_list = query_users()
-
-        if any(record.user_id == user_id for record in user_list):
+            if any(record.user_id == user_id for record in user_list):
+                update_user(user_id, line_name, tianlong_name)
+            else:
+                create_user(user_id, line_name, tianlong_name)
+            
+            message = TextSendMessage(text = f'Line:{line_name}\nTianLong:{tianlong_name}')
+            lineBotApi.reply_message(event.reply_token, message)
+        elif msg.startswith('/NewTeam') and user_id == owner_user_id:
 
             today_str = datetime.today().strftime('%Y-%m-%d')
 
             team = query_team(today_str)
 
             if team.date is not None:
+                lineBotApi.reply_message(
+                    event.reply_token, 
+                    [
+                        TextSendMessage(text = '組隊建過了！(｀⌒´メ)'), 
+                        TextSendMessage(text = get_team_message(team))
+                    ]
+                )
+            else:
+                weekday = datetime.today().isoweekday()
 
-                isSuccess = True
-                isRepeat = False
+                defult_user_id = None
 
-                tianlong_name = ''
+                if weekday <= 5:
+                    defult_user_id = qiang_user_id
 
-                for record in user_list:
-                    if record.user_id == user_id:
-                        tianlong_name = record.tianlong_name
-                        break
+                create_team(today_str, defult_user_id)
 
-                if team.member_a == user_id:
-                    isRepeat = True
-                    isSuccess = False
-                elif team.member_b == user_id:
-                    isRepeat = True
-                    isSuccess = False
-                elif team.member_c == user_id:
-                    isRepeat = True
-                    isSuccess = False
-                elif team.member_d == user_id:
-                    isRepeat = True
-                    isSuccess = False
-                elif team.member_e == user_id:
-                    isRepeat = True
-                    isSuccess = False
-                elif team.member_f == user_id:
-                    isRepeat = True
-                    isSuccess = False
-                else:
-                    if team.member_a is None:
-                        team.member_a = user_id
-                        team.member_a_name = tianlong_name
-                        update_team_member_a(today_str, user_id)
-                    elif team.member_b is None:
-                        team.member_b = user_id
-                        team.member_b_name = tianlong_name
-                        update_team_member_b(today_str, user_id)
-                    elif team.member_c is None:
-                        team.member_c = user_id
-                        team.member_c_name = tianlong_name
-                        update_team_member_c(today_str, user_id)
-                    elif team.member_d is None:
-                        team.member_d = user_id
-                        team.member_d_name = tianlong_name
-                        update_team_member_d(today_str, user_id)
-                    elif team.member_e is None:
-                        team.member_e = user_id
-                        team.member_e_name = tianlong_name
-                        update_team_member_e(today_str, user_id)
-                    elif team.member_f is None:
-                        team.member_f = user_id
-                        team.member_f_name = tianlong_name
-                        update_team_member_f(today_str, user_id)
+                team = query_team(today_str)
+
+                lineBotApi.reply_message(
+                    event.reply_token, 
+                    [
+                        TextSendMessage(text = '組隊建立成功！(。・`ω´・)'), 
+                        TextSendMessage(text = get_team_message(team))
+                    ]
+                )
+        elif msg.startswith('/Team'):
+
+            today_str = datetime.today().strftime('%Y-%m-%d')
+
+            team = query_team(today_str)
+
+            if team.date is not None:
+                lineBotApi.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text = get_team_message(team))
+                )
+            else:
+                lineBotApi.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text = '還沒建組隊，別急！')
+                )
+        elif msg.startswith('/+1'):
+
+            today = datetime.today()
+            today_str = today.strftime('%Y-%m-%d')
+            weekday = today.isoweekday()
+
+            over_time = False
+
+            if weekday <= 5 and today > datetime.strptime(f'{today_str} 19:45:00', '%Y-%m-%d %H:%M:%S'):
+                over_time = True
+
+            if weekday > 5 and today > datetime.strptime(f'{today_str} 13:15:00', '%Y-%m-%d %H:%M:%S'):
+                over_time = True
+
+            if over_time:
+                lineBotApi.reply_message(
+                    event.reply_token, 
+                    TextSendMessage(text = '已逾時！')
+                )
+            else:
+                user_list = query_users()
+
+                if any(record.user_id == user_id for record in user_list):
+
+                    team = query_team(today_str)
+
+                    if team.date is not None:
+
+                        isSuccess = True
+                        isRepeat = False
+
+                        tianlong_name = ''
+
+                        for record in user_list:
+                            if record.user_id == user_id:
+                                tianlong_name = record.tianlong_name
+                                break
+
+                        if team.member_a == user_id:
+                            isRepeat = True
+                            isSuccess = False
+                        elif team.member_b == user_id:
+                            isRepeat = True
+                            isSuccess = False
+                        elif team.member_c == user_id:
+                            isRepeat = True
+                            isSuccess = False
+                        elif team.member_d == user_id:
+                            isRepeat = True
+                            isSuccess = False
+                        elif team.member_e == user_id:
+                            isRepeat = True
+                            isSuccess = False
+                        elif team.member_f == user_id:
+                            isRepeat = True
+                            isSuccess = False
+                        else:
+                            if team.member_a is None:
+                                team.member_a = user_id
+                                team.member_a_name = tianlong_name
+                                update_team_member_a(today_str, user_id)
+                            elif team.member_b is None:
+                                team.member_b = user_id
+                                team.member_b_name = tianlong_name
+                                update_team_member_b(today_str, user_id)
+                            elif team.member_c is None:
+                                team.member_c = user_id
+                                team.member_c_name = tianlong_name
+                                update_team_member_c(today_str, user_id)
+                            elif team.member_d is None:
+                                team.member_d = user_id
+                                team.member_d_name = tianlong_name
+                                update_team_member_d(today_str, user_id)
+                            elif team.member_e is None:
+                                team.member_e = user_id
+                                team.member_e_name = tianlong_name
+                                update_team_member_e(today_str, user_id)
+                            elif team.member_f is None:
+                                team.member_f = user_id
+                                team.member_f_name = tianlong_name
+                                update_team_member_f(today_str, user_id)
+                            else:
+                                isSuccess = False
+
+                        if isSuccess:
+                            lineBotApi.reply_message(
+                                event.reply_token, 
+                                [
+                                    TextSendMessage(text = '加入成功！'), 
+                                    TextSendMessage(text = get_team_message(team))
+                                ]
+                            )
+                        elif isRepeat:
+                            lineBotApi.reply_message(
+                                event.reply_token, 
+                                [
+                                    TextSendMessage(text = '加過了！(｀⌒´メ)'), 
+                                    TextSendMessage(text = get_team_message(team))
+                                ]
+                            )
+                        else:
+                            lineBotApi.reply_message(
+                                event.reply_token, 
+                                [
+                                    TextSendMessage(text = '滿人啦！'), 
+                                    TextSendMessage(text = get_team_message(team))
+                                ]
+                            )
                     else:
-                        isSuccess = False
-
-                if isSuccess:
-                    lineBotApi.reply_message(
-                        event.reply_token, 
-                        [
-                            TextSendMessage(text = '加入成功！'), 
-                            TextSendMessage(text = get_team_message(team))
-                        ]
-                    )
-                elif isRepeat:
-                    lineBotApi.reply_message(
-                        event.reply_token, 
-                        [
-                            TextSendMessage(text = '加過了！(｀⌒´メ)'), 
-                            TextSendMessage(text = get_team_message(team))
-                        ]
-                    )
+                        lineBotApi.reply_message(
+                            event.reply_token, 
+                            TextSendMessage(text = '還沒建組隊，別急！')
+                        )
                 else:
                     lineBotApi.reply_message(
                         event.reply_token, 
-                        [
-                            TextSendMessage(text = '滿人啦！'), 
-                            TextSendMessage(text = get_team_message(team))
-                        ]
+                        TextSendMessage(text = '你沒註冊！(｀⌒´メ)')
                     )
-            else:
+        elif msg.startswith('/-1'):
+
+            today = datetime.today()
+            today_str = today.strftime('%Y-%m-%d')
+            weekday = today.isoweekday()
+
+            over_time = False
+
+            if weekday <= 5 and today > datetime.strptime(f'{today_str} 19:45:00', '%Y-%m-%d %H:%M:%S'):
+                over_time = True
+
+            if weekday > 5 and today > datetime.strptime(f'{today_str} 13:15:00', '%Y-%m-%d %H:%M:%S'):
+                over_time = True
+
+            if over_time:
                 lineBotApi.reply_message(
                     event.reply_token, 
-                    TextSendMessage(text = '還沒建組隊，別急！')
+                    TextSendMessage(text = '已逾時！')
                 )
-        else:
-            lineBotApi.reply_message(
-                event.reply_token, 
-                TextSendMessage(text = '你沒註冊！(｀⌒´メ)')
-            )
-    elif msg.startswith('/-1'):
-
-        user_list = query_users()
-
-        if any(record.user_id == user_id for record in user_list):
-
-            today_str = datetime.today().strftime('%Y-%m-%d')
-
-            team = query_team(today_str)
-
-            if team.date is not None:
-
-                isSuccess = True
-                
-                if team.member_a == user_id:
-                    team.member_a = None
-                    team.member_a_name = None
-                    update_team_member_a(today_str, None)
-                elif team.member_b == user_id:
-                    team.member_b = None
-                    team.member_b_name = None
-                    update_team_member_b(today_str, None)
-                elif team.member_c == user_id:
-                    team.member_c = None
-                    team.member_c_name = None
-                    update_team_member_c(today_str, None)
-                elif team.member_d == user_id:
-                    team.member_d = None
-                    team.member_d_name = None
-                    update_team_member_d(today_str, None)
-                elif team.member_e == user_id:
-                    team.member_e = None
-                    team.member_e_name = None
-                    update_team_member_e(today_str, None)
-                elif team.member_f == user_id:
-                    team.member_f = None
-                    team.member_f_name = None
-                    update_team_member_f(today_str, None)
-                else:
-                    isSuccess = False
-
-                if isSuccess:
-                    lineBotApi.reply_message(
-                        event.reply_token, 
-                        [
-                            TextSendMessage(text = '退出成功！(｀⌒´メ)'), 
-                            TextSendMessage(text = get_team_message(team))
-                        ]
-                    )
-                else:
-                    lineBotApi.reply_message(
-                        event.reply_token, 
-                        [
-                            TextSendMessage(text = '又沒加入！(｀⌒´メ)'), 
-                            TextSendMessage(text = get_team_message(team))
-                        ]
-                    )
             else:
-                lineBotApi.reply_message(
-                    event.reply_token, 
-                    TextSendMessage(text = '還沒建組隊，別急！')
-                )
+                user_list = query_users()
+
+                if any(record.user_id == user_id for record in user_list):
+
+                    team = query_team(today_str)
+
+                    if team.date is not None:
+
+                        isSuccess = True
+                        
+                        if team.member_a == user_id:
+                            team.member_a = None
+                            team.member_a_name = None
+                            update_team_member_a(today_str, None)
+                        elif team.member_b == user_id:
+                            team.member_b = None
+                            team.member_b_name = None
+                            update_team_member_b(today_str, None)
+                        elif team.member_c == user_id:
+                            team.member_c = None
+                            team.member_c_name = None
+                            update_team_member_c(today_str, None)
+                        elif team.member_d == user_id:
+                            team.member_d = None
+                            team.member_d_name = None
+                            update_team_member_d(today_str, None)
+                        elif team.member_e == user_id:
+                            team.member_e = None
+                            team.member_e_name = None
+                            update_team_member_e(today_str, None)
+                        elif team.member_f == user_id:
+                            team.member_f = None
+                            team.member_f_name = None
+                            update_team_member_f(today_str, None)
+                        else:
+                            isSuccess = False
+
+                        if isSuccess:
+                            lineBotApi.reply_message(
+                                event.reply_token, 
+                                [
+                                    TextSendMessage(text = '退出成功！(｀⌒´メ)'), 
+                                    TextSendMessage(text = get_team_message(team))
+                                ]
+                            )
+                        else:
+                            lineBotApi.reply_message(
+                                event.reply_token, 
+                                [
+                                    TextSendMessage(text = '又沒加入！(｀⌒´メ)'), 
+                                    TextSendMessage(text = get_team_message(team))
+                                ]
+                            )
+                    else:
+                        lineBotApi.reply_message(
+                            event.reply_token, 
+                            TextSendMessage(text = '還沒建組隊，別急！')
+                        )
+                else:
+                    lineBotApi.reply_message(
+                        event.reply_token, 
+                        TextSendMessage(text = '你沒註冊！(｀⌒´メ)')
+                    )
         else:
-            lineBotApi.reply_message(
-                event.reply_token, 
-                TextSendMessage(text = '你沒註冊！(｀⌒´メ)')
-            )
-    else:
-        print(f'userId:{user_id}')
-        print(f'lineName:{line_name}')
-        print(f'message:{msg}')
-        print('handle_message continue...')
-        # message = TextSendMessage(text = msg)
-        # lineBotApi.reply_message(event.reply_token, message)
+            print('userId:{user_id}, handle_message continue...')
 
 @handler.add(PostbackEvent)
 def handle_message(event):
