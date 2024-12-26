@@ -25,8 +25,6 @@ group_id = os.getenv('GROUP_ID', '')
 
 admin_user_id = os.getenv('ADMIN_USER_ID', '')
 
-user_list = query_users()
-
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods = ['POST'])
 def callback():
@@ -57,16 +55,16 @@ def handle_message(event):
         if len(tianlong_name_list) == 2:
             tianlong_name = tianlong_name_list[1]
 
+        user_list = query_users()
+
+        for record in user_list:
+            print(vars(record))
+
         if any(record.user_id == user_id for record in user_list):
-            for record in user_list:
-                if record.user_id == user_id:
-                    update_user(user_id, line_name, tianlong_name)
-                    break
+            update_user(user_id, line_name, tianlong_name)
         else:
             create_user(user_id, line_name, tianlong_name)
         
-        user_list = query_users()
-
         message = TextSendMessage(text = f'Line:{line_name}\nTianLong:{tianlong_name}')
         lineBotApi.reply_message(event.reply_token, message)
     elif msg.startswith('/+1'):
