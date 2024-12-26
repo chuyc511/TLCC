@@ -141,16 +141,22 @@ def handle_message(event):
 
                 if team.member_a == user_id:
                     isRepeat = True
+                    isSuccess = False
                 elif team.member_b == user_id:
                     isRepeat = True
+                    isSuccess = False
                 elif team.member_c == user_id:
                     isRepeat = True
+                    isSuccess = False
                 elif team.member_d == user_id:
                     isRepeat = True
+                    isSuccess = False
                 elif team.member_e == user_id:
                     isRepeat = True
+                    isSuccess = False
                 elif team.member_f == user_id:
                     isRepeat = True
+                    isSuccess = False
                 else:
                     if team.member_a is None:
                         team.member_a = user_id
