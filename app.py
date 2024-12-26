@@ -94,14 +94,81 @@ def handle_message(event):
                     TextSendMessage(text = get_team_message(team))
                 ]
             )
+    elif msg.startswith('/Team'):
+
+        today_str = datetime.today().strftime('%Y-%m-%d')
+
+        team = query_team(today_str)
+
+        if team.date is not None:
+            lineBotApi.reply_message(
+                event.reply_token,
+                TextSendMessage(text = get_team_message(team))
+            )
+        else:
+            lineBotApi.reply_message(
+                event.reply_token,
+                TextSendMessage(text = '組隊尚未成立！')
+            )
     elif msg.startswith('/+1'):
 
+        today_str = datetime.today().strftime('%Y-%m-%d')
 
-        message = TextSendMessage(text = '+1 OK')
-        lineBotApi.reply_message(event.reply_token, message)
+        team = query_team(today_str)
+
+        if team.date is not None:
+
+            isSuccess = True
+            
+            if team.member_a is None:
+                team.member_a = user_id
+                team.member_a_name = tianlong_name
+                update_team_member_a(today_str, user_id)
+            elif team.member_b is None:
+                team.member_b = user_id
+                team.member_b_name = tianlong_name
+                update_team_member_b(today_str, user_id)
+            elif team.member_c is None:
+                team.member_c = user_id
+                team.member_c_name = tianlong_name
+                update_team_member_c(today_str, user_id)
+            elif team.member_d is None:
+                team.member_d = user_id
+                team.member_d_name = tianlong_name
+                update_team_member_d(today_str, user_id)
+            elif team.member_e is None:
+                team.member_e = user_id
+                team.member_e_name = tianlong_name
+                update_team_member_e(today_str, user_id)
+            elif team.member_f is None:
+                team.member_f = user_id
+                team.member_f_name = tianlong_name
+                update_team_member_f(today_str, user_id)
+            else:
+                isSuccess = False
+
+            if isSuccess:
+                lineBotApi.reply_message(
+                    event.reply_token, 
+                    [
+                        TextSendMessage(text = '加入成功！'), 
+                        TextSendMessage(text = get_team_message(team))
+                    ]
+                )
+            else:
+                lineBotApi.reply_message(
+                    event.reply_token, 
+                    [
+                        TextSendMessage(text = '滿人啦！'), 
+                        TextSendMessage(text = get_team_message(team))
+                    ]
+                )
+        else:
+            lineBotApi.reply_message(
+                event.reply_token, 
+                TextSendMessage(text = '組隊尚未成立！')
+            )
     elif msg.startswith('/-1'):
-
-
         message = TextSendMessage(text = '-1 OK')
         lineBotApi.reply_message(event.reply_token, message)
     else:

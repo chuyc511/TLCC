@@ -133,23 +133,68 @@ def create_team(date, member_a):
         'member_a': member_a
     })
 
-def update_team(date, member_a, member_b, member_c, member_d, member_e, member_f):
+def update_team_member_a(date, member_a):
     update_team_script = '''
         update tlcc_team 
-        set member_a = %(member_a)s,
-            member_b = %(member_b)s,
-            member_c = %(member_c)s,
-            member_d = %(member_d)s,
-            member_e = %(member_e)s,
-            member_f = %(member_f)s,
+        set member_a = %(member_a)s
         where date = %(date)s;
     '''
     execute_script(update_team_script, {
         'date': date,
-        'member_a': member_a,
-        'member_b': member_b,
-        'member_c': member_c,
-        'member_d': member_d,
-        'member_e': member_e,
+        'member_a': member_a
+    })
+
+def update_team_member_b(date, member_b):
+    update_team_script = '''
+        update tlcc_team 
+        set member_b = %(member_b)s
+        where date = %(date)s;
+    '''
+    execute_script(update_team_script, {
+        'date': date,
+        'member_b': member_b
+    })
+
+def update_team_member_c(date, member_c):
+    update_team_script = '''
+        update tlcc_team 
+        set member_c = %(member_c)s
+        where date = %(date)s;
+    '''
+    execute_script(update_team_script, {
+        'date': date,
+        'member_c': member_c
+    })
+
+def update_team_member_d(date, member_d):
+    update_team_script = '''
+        update tlcc_team 
+        set member_d = %(member_d)s
+        where date = %(date)s;
+    '''
+    execute_script(update_team_script, {
+        'date': date,
+        'member_d': member_d
+    })
+
+def update_team_member_e(date, member_e):
+    update_team_script = '''
+        update tlcc_team 
+        set member_e = %(member_e)s
+        where date = %(date)s;
+    '''
+    execute_script(update_team_script, {
+        'date': date,
+        'member_e': member_e
+    })
+
+def update_team_member_f(date, member_f):
+    update_team_script = '''
+        update tlcc_team 
+        set member_f = %(member_f)s
+        where date = %(date)s;
+    '''
+    execute_script(update_team_script, {
+        'date': date,
         'member_f': member_f
     })
