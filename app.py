@@ -50,13 +50,16 @@ def handle_message(event):
     msg = event.message.text
     user_id = event.source.user_id
     group_id = None
-    profile = lineBotApi.get_profile(user_id)
-    line_name = profile.display_name
+    line_name = None
+
+    if user_id is not None:
+        profile = lineBotApi.get_profile(user_id)
+        line_name = profile.display_name
 
     if hasattr(event.source, 'group_id'):
         group_id = event.source.group_id
 
-    if group_id == spec_group_id or user_id == owner_user_id:
+    if line_name is not None and (group_id == spec_group_id or user_id == owner_user_id):
 
         if msg.startswith('/RegisterTianLong'):
             tianlong_name_list = msg.split('-', 1)
