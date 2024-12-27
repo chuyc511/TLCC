@@ -1,6 +1,6 @@
 import os
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
 
@@ -82,7 +82,7 @@ def handle_message(event):
             lineBotApi.reply_message(event.reply_token, message)
         elif msg.startswith('/NewTeam') and user_id == owner_user_id:
             
-            now_datetime = datetime.now()
+            now_datetime = datetime.now() + timedelta(hours = 8)
             now_datetime_str = now_datetime.strftime('%Y-%m-%d')
 
             team = query_team(now_datetime_str)
@@ -116,7 +116,7 @@ def handle_message(event):
                 )
         elif msg.startswith('/Team'):
             
-            now_datetime = datetime.now()
+            now_datetime = datetime.now() + timedelta(hours = 8)
             now_datetime_str = now_datetime.strftime('%Y-%m-%d')
 
             team = query_team(now_datetime_str)
@@ -133,7 +133,7 @@ def handle_message(event):
                 )
         elif msg.startswith('/+1'):
             
-            now_datetime = datetime.now()
+            now_datetime = datetime.now() + timedelta(hours = 8)
             now_datetime_str = now_datetime.strftime('%Y-%m-%d')
             weekday = now_datetime.isoweekday()
 
@@ -255,7 +255,7 @@ def handle_message(event):
                     )
         elif msg.startswith('/-1'):
             
-            now_datetime = datetime.now()
+            now_datetime = datetime.now() + timedelta(hours = 8)
             now_datetime_str = now_datetime.strftime('%Y-%m-%d')
             weekday = now_datetime.isoweekday()
 
