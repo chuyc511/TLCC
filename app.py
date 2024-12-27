@@ -164,11 +164,6 @@ def handle_message(event):
 
                     team = query_team(now_datetime_str)
 
-                    lineBotApi.reply_message(
-                        event.reply_token, 
-                        TextSendMessage(text = '組隊建立成功！(。・`ω´・)')
-                    )
-
                 user_list = query_users()
 
                 if any(record.user_id == user_id for record in user_list):
