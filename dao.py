@@ -94,7 +94,7 @@ def query_team(date):
             member_e,
             tce.tianlong_name as member_e_name,
             member_f,
-            tcf.tianlong_name as v
+            tcf.tianlong_name as member_f_name
         from tlcc_team as tt
             left join tlcc_user as tca
                 on tca.user_id = tt.member_a
