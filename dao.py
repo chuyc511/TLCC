@@ -117,20 +117,23 @@ def query_team(date):
 
     return Team({})
 
-def create_team(date, member_a):
+def create_team(date, member_a = None, member_b = None):
     create_team_script = '''
         insert into tlcc_team (
             date,
-            member_a
+            member_a,
+            member_b
         )
         values (
             %(date)s,
-            %(member_a)s
+            %(member_a)s,
+            %(member_b)s
         );
     '''
     execute_script(create_team_script, {
         'date': date,
-        'member_a': member_a
+        'member_a': member_a,
+        'member_b': member_b
     })
 
 def update_team_member_a(date, member_a):

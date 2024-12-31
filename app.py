@@ -28,6 +28,7 @@ spec_group_id = os.getenv('GROUP_ID', '')
 
 owner_user_id = os.getenv('OWNER_USER_ID', '')
 qiang_user_id = os.getenv('QIANG_USER_ID', '')
+eagle_user_id = os.getenv('EAGLE_USER_ID', '')
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods = ['POST'])
@@ -98,12 +99,14 @@ def handle_message(event):
             else:
                 weekday = now_datetime.isoweekday()
 
-                defult_user_id = None
+                defult_st_user_id = None
+                defult_nd_user_id = None
 
                 if weekday <= 5:
-                    defult_user_id = qiang_user_id
+                    defult_st_user_id = qiang_user_id
+                    defult_nd_user_id = eagle_user_id
 
-                create_team(now_datetime_str, defult_user_id)
+                create_team(now_datetime_str, defult_st_user_id, defult_nd_user_id)
 
                 team = query_team(now_datetime_str)
 
@@ -155,12 +158,14 @@ def handle_message(event):
 
                 if team.date is None:
 
-                    defult_user_id = None
+                    defult_st_user_id = None
+                    defult_nd_user_id = None
 
                     if weekday <= 5:
-                        defult_user_id = qiang_user_id
+                        defult_st_user_id = qiang_user_id
+                        defult_nd_user_id = eagle_user_id
 
-                    create_team(now_datetime_str, defult_user_id)
+                    create_team(now_datetime_str, defult_st_user_id, defult_nd_user_id)
 
                     team = query_team(now_datetime_str)
 
